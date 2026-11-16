@@ -73,7 +73,7 @@ python -m genomic_transformer.interpret --data-config config/data/ctcf_gm12878.y
 
 Cloud GPU training (Runpod): [docs/cloud-runbook.md](docs/cloud-runbook.md). A full 40-epoch fine-tune is ~$0.50 and ~30 minutes on an RTX 4090; the 5-epoch pretrain ~$1.50. Total cloud spend for every result in this README: **~$9**.
 
-## Notes & gotchas (distilled the hard way)
+## Notes & gotchas
 
 - **Pilot-scale pretraining can mislead**: 1 epoch over 1.5M windows gave a nearly flat MLM loss (1.29) and "no transfer gain" (0.792 vs 0.798 scratch); 5 epochs (loss → 1.17) gave +0.165. Don't conclude from an under-trained pretrain.
 - **Apple Silicon MPS**: bf16 autocast is a measured no-op on torch 2.8 (SDPA materializes fp32-sized attention matrices); memory caps and batch sizes must be tuned for fp32. CUDA has no such issue.
