@@ -1,0 +1,13 @@
+project:
+  name: genomic_transformer
+  seed: 42
+
+paths:
+  data: data
+  notebooks: notebooks
+
+rules:
+  sequence:
+    alphabet: ACGT
+    case: upper
+    unknown_symbol: N

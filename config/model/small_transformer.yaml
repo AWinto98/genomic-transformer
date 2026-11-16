@@ -1,0 +1,44 @@
+# Small pre-LN encoder classifier for 1000 bp windows. Sized at ~0.7M params
+# (658,945 trainable) for the 82k-window ctcf_gm12878 dataset; increase
+# holdout if eval variance is a concern (see the splits note in
+# config/data/ctcf_gm12878.yaml).
+#
+# 16 GB MacBook sizing, measured 2026-11-12 (MPS probes, allocator cap
+# disabled): batch 16 fp32 peaks at ~8.03 GiB per training step -- infeasible
+# under a cap that leaves macOS RAM headroom -- while batch 8 peaks at
+# ~4.81 GiB, so training runs batch 8 x accum 4 (effective batch 32, same
+# 2,332 optimizer steps/epoch). bf16 autocast was measured a no-op on
+# torch 2.8 MPS (SDPA materializes fp32-sized attention matrices: 7.62 GiB
+# pool vs 7.55 GiB fp32, slightly slower), hence precision fp32. Pilot
+# scope: 20 epochs, patience 4 (first head-to-head vs the baseline bar).
+model:
+  d_model: 128
+  n_layers: 4
+  n_heads: 8
+  d_ff: 256
+  dropout: 0.1
+  pooling: mean
+  max_len: 1000
+
+training:
+  epochs: 20
+  # 16 GB MacBook: batch/accum keeps the effective batch at 32 (lr unchanged);
+  # the pool cap prevents the MPS allocator ballooning past physical RAM
+  # (the 7h44m swap-thrash run).
+  batch_size: 8
+  grad_accum_steps: 4
+  # bf16 stays off: MPS autocast showed no memory benefit on torch 2.8 (SDPA
+  # materializes fp32-sized attention matrices; pool size and speed match fp32).
+  # CUDA does benefit from bf16 -- see small_transformer_cloud.yaml.
+  precision: fp32
+  # Watermark 0.55, probed 2026-11-12: a batch-8 training step peaks at
+  # ~4.81 GiB total (4.31 GiB pool + ~0.5 GiB other) against a ~10.66 GiB
+  # device limit, so 0.55 caps the MPS pool at ~5.9 GiB (~22% headroom)
+  # while leaving RAM headroom for macOS on this 16 GB machine.
+  mps_high_watermark_ratio: 0.55
+  lr: 3.0e-4
+  weight_decay: 0.01
+  warmup_steps: 500
+  patience: 4
+  seed: 42
+  grad_clip: 1.0

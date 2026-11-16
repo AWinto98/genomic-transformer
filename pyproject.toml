@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "genomic_transformer"
+version = "0.1.0"
+description = "Genomic transformers for binding-site prediction, pretraining, and interpretation"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+dependencies = [
+    "PyYAML>=6.0",
+    "numpy>=1.23",
+    "pyfaidx>=0.8",
+    "scikit-learn>=1.3",
+    "torch>=2.3",
+]
+
+[project.urls]
+Homepage = "https://github.com/AWinto98/genomic-transformer"
+Repository = "https://github.com/AWinto98/genomic-transformer"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4",
+    "matplotlib>=3.7",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

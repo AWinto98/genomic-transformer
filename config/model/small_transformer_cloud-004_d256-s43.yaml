@@ -1,0 +1,23 @@
+# MLM fine-tune seed replicate
+# Copy of small_transformer_cloud-004_d256.yaml (d_model 256 sweep winner)
+# with seed 42 -> 43: CTCF fine-tune from MLM init, seed replicate.
+model:
+  d_model: 256
+  n_layers: 4
+  n_heads: 8
+  d_ff: 512
+  dropout: 0.1
+  pooling: mean
+  max_len: 1000
+
+training:
+  epochs: 40
+  batch_size: 64
+  grad_accum_steps: 1
+  precision: bf16
+  lr: 3.0e-4
+  weight_decay: 0.01
+  warmup_steps: 500
+  patience: 8
+  seed: 43
+  grad_clip: 1.0

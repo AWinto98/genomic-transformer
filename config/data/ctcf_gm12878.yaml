@@ -1,0 +1,120 @@
+dataset:
+  name: ctcf_gm12878
+  transcription_factor: CTCF
+  cell_line: GM12878
+  assembly: hg38
+  reference_representation: UCSC full soft-masked assembly
+
+paths:
+  raw_dir: data/raw/ctcf_gm12878
+  output_dir: data/processed/ctcf_gm12878
+  dataset: data/processed/ctcf_gm12878/windows.npz
+  manifest: data/processed/ctcf_gm12878/manifest.json
+
+download:
+  chunk_size: 1048576
+  timeout_seconds: 60
+  max_retries: 8
+  backoff_seconds: 5
+  parallel:
+    connections: 8
+    segment_size: 16777216
+    min_file_size: 33554432
+
+sources:
+  peaks:
+    provider: ENCODE
+    experiment_accession: ENCSR000AKB
+    file_accession: ENCFF017XLW
+    selection: ENCODE4 current conservative IDR thresholded peaks
+    format: narrowPeak
+    compression: gzip
+    url: https://www.encodeproject.org/files/ENCFF017XLW/@@download/ENCFF017XLW.bed.gz
+    path: data/raw/ctcf_gm12878/ENCFF017XLW.bed.gz
+    bytes: 654278
+    md5: 626b6ee48f754a7cffe2a2c23fbf7832
+  blacklist:
+    provider: ENCODE
+    file_accession: ENCFF356LFX
+    selection: ENCODE hg38 exclusion-list regions
+    format: BED
+    compression: gzip
+    url: https://www.encodeproject.org/files/ENCFF356LFX/@@download/ENCFF356LFX.bed.gz
+    path: data/raw/ctcf_gm12878/ENCFF356LFX.bed.gz
+    bytes: 8211
+    md5: 393688b4f06c9ce26165d47433dd8c37
+  reference:
+    provider: UCSC
+    assembly: hg38
+    representation: full soft-masked assembly
+    format: FASTA
+    compression: gzip
+    url: https://hgdownload.soe.ucsc.edu/goldenPath/hg38/bigZips/hg38.fa.gz
+    path: data/raw/ctcf_gm12878/hg38.fa.gz
+    bytes: 983659424
+    md5: 1c9dcaddfa41027f17cd8f7a82c7293b
+    decompressed_path: data/raw/ctcf_gm12878/hg38.fa
+    index_path: data/raw/ctcf_gm12878/hg38.fa.fai
+    # Documented alternative only: different representation, not interchangeable.
+    alternatives:
+      - provider: NCBI
+        assembly: GRCh38
+        representation: no-alt analysis set with UCSC chromosome identifiers
+        url: https://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.15_GRCh38/seqs_for_alignment_pipelines.ucsc_ids/GCA_000001405.15_GRCh38_no_alt_analysis_set.fna.gz
+        bytes: 872949833
+        md5: a08035b6a6e31780e96a34008ff21bd6
+
+processing:
+  canonical_chromosomes:
+    - chr1
+    - chr2
+    - chr3
+    - chr4
+    - chr5
+    - chr6
+    - chr7
+    - chr8
+    - chr9
+    - chr10
+    - chr11
+    - chr12
+    - chr13
+    - chr14
+    - chr15
+    - chr16
+    - chr17
+    - chr18
+    - chr19
+    - chr20
+    - chr21
+    - chr22
+    - chrX
+    - chrY
+  coordinate_system: 0-based half-open
+  window_length: 1000
+  summit_offset_column: 10
+  missing_summit: -1
+  max_n_fraction: 0.05
+  matching:
+    negatives_per_positive: 1
+    seed: 42
+    gc_bin_edges: [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 1.0]
+    repeat_bin_edges: [0.0, 0.1, 0.2, 0.3, 0.6, 0.8, 1.0]
+    batch_size: 4096
+    max_attempts_per_negative: 20000
+    allow_relaxed_fallback: true
+  encoding:
+    alphabet: ACGTN
+    tokens: {A: 0, C: 1, G: 2, T: 3, N: 4}
+    input_case: upper
+    unknown_character: N
+    dtype: uint8
+    gc_denominator: ACGT
+
+# Chromosome-held-out evaluation splits: train is every canonical chromosome
+# not listed under validation/test. chr17/chr8 hold out ~9% of windows while
+# keeping both held-out sets class-balanced; add chromosomes here if eval
+# variance becomes a concern.
+splits:
+  validation: [chr17]
+  test: [chr8]

@@ -1,0 +1,24 @@
+# JUND small-data recipe sweep 2026-11-14
+# Arm 2: identical to jund_d128_lr1e4_w100.yaml but lr 1.0e-4 -> 3.0e-5 —
+# brackets the small-data learning-rate question from below (CTCF's 3e-4
+# collapsed on JUND; arm 1 tries 1e-4, this arm 3e-5).
+model:
+  d_model: 128
+  n_layers: 4
+  n_heads: 8
+  d_ff: 256
+  dropout: 0.1
+  pooling: mean
+  max_len: 1000
+
+training:
+  epochs: 60
+  batch_size: 64
+  grad_accum_steps: 1
+  precision: bf16
+  lr: 3.0e-5
+  weight_decay: 0.01
+  warmup_steps: 100
+  patience: 10
+  seed: 42
+  grad_clip: 1.0

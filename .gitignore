@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.venv/
+.ipynb_checkpoints/
+.DS_Store
+
+/data/
+AGENTS.md
+/docs/learning.md
+/docs/ARCHITECTURE.md

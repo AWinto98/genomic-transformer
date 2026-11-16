@@ -1,0 +1,23 @@
+# Sweep run 2026-11-14: learning-rate sweep of the cloud config
+# (small_transformer_cloud.yaml). lr 3.0e-4 -> 1.0e-3, paired with the same
+# epoch scale-up as the -002 arm (epochs 20 -> 40, patience 4 -> 8).
+model:
+  d_model: 128
+  n_layers: 4
+  n_heads: 8
+  d_ff: 256
+  dropout: 0.1
+  pooling: mean
+  max_len: 1000
+
+training:
+  epochs: 40
+  batch_size: 64
+  grad_accum_steps: 1
+  precision: bf16
+  lr: 1.0e-3
+  weight_decay: 0.01
+  warmup_steps: 500
+  patience: 8
+  seed: 42
+  grad_clip: 1.0

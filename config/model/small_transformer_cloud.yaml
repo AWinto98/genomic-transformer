@@ -1,0 +1,27 @@
+# Small pre-LN encoder classifier for 1000 bp windows -- cloud GPU config.
+# Companion to small_transformer.yaml (the 16 GB MacBook config): identical
+# model block, training retuned for a CUDA box -- bf16 autocast (which does
+# benefit on CUDA, unlike torch 2.8 MPS where SDPA materializes fp32-sized
+# attention matrices), a 64-wide micro-batch with no accumulation, and no
+# mps_high_watermark_ratio key: that cap only gates the MPS allocator on
+# memory-constrained Macs and is pointless on a memory-plentiful CUDA box.
+model:
+  d_model: 128
+  n_layers: 4
+  n_heads: 8
+  d_ff: 256
+  dropout: 0.1
+  pooling: mean
+  max_len: 1000
+
+training:
+  epochs: 20
+  batch_size: 64
+  grad_accum_steps: 1
+  precision: bf16
+  lr: 3.0e-4
+  weight_decay: 0.01
+  warmup_steps: 500
+  patience: 4
+  seed: 42
+  grad_clip: 1.0
